@@ -1,7 +1,7 @@
 const router = require("express").Router()
 
 const Bill = require("../models/Bill.js")
-const Product = require("../models/Product.js")
+
 const verify = require("../middle/verify.js")
 
 // CREATE BILL
@@ -49,9 +49,30 @@ router.get("/:id", verify, async (req, res) => {
 
 // GET ALL BILL
 router.get("/", verify, async (req, res) => {
+    const page = parseInt(req.query.page)
+    const limit = parseInt(req.query.limit)
+
+    const startIndex = (page - 1) * limit
+    const endIndex = page * limit
+    const results = {}
+
+    if (endIndex < await Bill.countDocuments({userid: req.user.userId}).exec()) {
+        results.next = {
+            page: page + 1,
+            limit: limit
+        }
+    }
+        
+        if (startIndex > 0) {
+        results.previous = {
+            page: page - 1,
+            limit: limit
+        }
+    }
+      
     try {
-        let bills = await Bill.find({userid: req.user.userId})
-        res.status(200).json(bills)
+        results.results = await Bill.find({userid: req.user.userId}).limit(limit).skip(startIndex).exec()
+        res.status(200).json(results)
     } catch (err) {
         res.status(500).json(err)
     }
