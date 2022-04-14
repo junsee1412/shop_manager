@@ -93,8 +93,10 @@ router.get("/", verify, async (req, res) => {
         if (catName) {
             products.categories = [catName]
         }
+        
+        const totalPage = await Product.countDocuments().exec()
 
-        if (endIndex < await Product.countDocuments().exec()) {
+        if (endIndex < totalPage) {
             results.next = {
                 page: page + 1,
                 limit: limit

@@ -55,8 +55,9 @@ router.get("/", verify, async (req, res) => {
     const startIndex = (page - 1) * limit
     const endIndex = page * limit
     const results = {}
-
-    if (endIndex < await Bill.countDocuments({userid: req.user.userId}).exec()) {
+    const totalPage = await Bill.countDocuments({userid: req.user.userId}).exec()
+    
+    if (endIndex < totalPage) {
         results.next = {
             page: page + 1,
             limit: limit
