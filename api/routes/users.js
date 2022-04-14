@@ -5,6 +5,7 @@ const User = require("../models/User.js")
 const Product = require("../models/Product.js")
 const Category = require("../models/Category.js")
 const Brand = require("../models/Brand.js")
+const Bill = require("../models/Bill.js")
 const verify = require("../middle/verify.js")
 
 // UPDATE
@@ -40,6 +41,7 @@ router.delete("/:id", verify, async (req, res) => {
                 await Product.deleteMany({userid: user._id.toString()})
                 await Category.deleteMany({userid: user._id.toString()})
                 await Brand.deleteMany({userid: user._id.toString()})
+                await Bill.deleteMany({userid: user._id.toString()})
                 await User.findByIdAndDelete(req.params.id)
                 res.status(200).json({"Message": "User has been deleted..."})
             } catch (err) {
