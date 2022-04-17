@@ -14,6 +14,11 @@ const BillSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    checkout: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
     products: {
         type: Array,
         required: true,
