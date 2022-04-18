@@ -13,14 +13,22 @@ router.post("/", verify, async (req, res) => {
     let newproducts = []
     for (x in products) {
         let product = await Product.findById(products[x]._id)
-        newproducts.push(product)
+        
+        let adiv = parseInt(product.amount) - parseInt(products[x].count)
+        
+        await Product.findByIdAndUpdate(products[x]._id, {amount: adiv})
+        
+        let {amount, ...others} = product._doc
+        others.count = products[x].count
+
+        newproducts.push(others)
     }
 
     addId.userid = req.user.userId
     addId.products = newproducts
     const newBill = await Bill(addId)
     try {
-        const savedBill = await newBill.save()
+        // const savedBill = await newBill.save()
         res.status(200).json(newBill)
     } catch (err) {
         res.status(500).json(err)
