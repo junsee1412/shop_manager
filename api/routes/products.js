@@ -1,6 +1,7 @@
 const router = require("express").Router()
 
 const Brand = require("../models/Brand.js")
+const Category = require("../models/Category.js")
 const Product = require("../models/Product.js")
 
 const verify = require("../middle/verify.js")
@@ -74,42 +75,17 @@ router.get("/:id", verify, async (req, res) => {
 
 // GET ALL PRODUCT
 router.get("/", verify, async (req, res) => {
-    const catName = req.query.cat
-    const brandName = req.query.brand
-
-    const page = parseInt(req.query.page)
-    const limit = parseInt(req.query.limit)
-
-    const startIndex = (page - 1) * limit
-    const endIndex = page * limit
-    const results = {}
-
+    const catId = req.query.cat
+    const brandId = req.query.brand
     try {
         let products = {userid: req.user.userId}
-        if (brandName) {
-            let brandId = await Brand.findOne({name: brandName})
-            products.brands = brandId._id.toString()
+        if (brandId) {
+            products.brands = brandId
         }
-        if (catName) {
-            products.categories = [catName]
+        if (catId) {
+            products.categories = [catId]
         }
-        
-        const totalPage = await Product.countDocuments().exec()
-
-        if (endIndex < totalPage) {
-            results.next = {
-                page: page + 1,
-                limit: limit
-            }
-        }
-          
-        if (startIndex > 0) {
-            results.previous = {
-                page: page - 1,
-                limit: limit
-            }
-        }
-        results.results = await Product.find(products).limit(limit).skip(startIndex).exec()
+        const results = await Product.find(products).exec()
 
         res.status(200).json(results)
 

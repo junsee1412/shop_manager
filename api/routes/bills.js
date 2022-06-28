@@ -14,9 +14,9 @@ router.post("/", verify, async (req, res) => {
     for (x in products) {
         let product = await Product.findById(products[x]._id)
         
-        let adiv = parseInt(product.amount) - parseInt(products[x].count)
+        // let adiv = parseInt(product.amount) - parseInt(products[x].count)
         
-        await Product.findByIdAndUpdate(products[x]._id, {amount: adiv})
+        // await Product.findByIdAndUpdate(products[x]._id, {amount: adiv})
         
         let {amount, ...others} = product._doc
         others.count = products[x].count
@@ -28,8 +28,8 @@ router.post("/", verify, async (req, res) => {
     addId.products = newproducts
     const newBill = await Bill(addId)
     try {
-        // const savedBill = await newBill.save()
-        res.status(200).json(newBill)
+        const savedBill = await newBill.save()
+        res.status(200).json(savedBill)
     } catch (err) {
         res.status(500).json(err)
     }
@@ -44,6 +44,16 @@ router.put("/:id", verify, async (req, res) => {
                 res.status(200).json({"Message": "This Bill has been paid!"})
             } else {
                 try {
+                    const bill = await Bill.findById(req.params.id)
+                    let products = bill.products
+                    for (x in products) {
+                        let product = await Product.findById(products[x]._id)
+                        
+                        let adiv = parseInt(product.amount) - parseInt(products[x].count)
+                        
+                        await Product.findByIdAndUpdate(products[x]._id, {amount: adiv})
+                    }
+
                     const updatedBill = await Bill.findByIdAndUpdate(
                         req.params.id, 
                         {
@@ -77,12 +87,6 @@ router.get("/:id", verify, async (req, res) => {
 // GET ALL BILL
 router.get("/", verify, async (req, res) => {
     const checkout = req.query.checkout
-    const page = parseInt(req.query.page)
-    const limit = parseInt(req.query.limit)
-
-    const startIndex = (page - 1) * limit
-    const endIndex = page * limit
-    const results = {}
     let findObj = {userid: req.user.userId}
 
     if (checkout === "false")  {
@@ -90,24 +94,8 @@ router.get("/", verify, async (req, res) => {
     } else if (checkout === "true")  {
         findObj.checkout = true
     }
-    const totalPage = await Bill.countDocuments(findObj).exec()
-    
-    if (endIndex < totalPage) {
-        results.next = {
-            page: page + 1,
-            limit: limit
-        }
-    }
-        
-        if (startIndex > 0) {
-        results.previous = {
-            page: page - 1,
-            limit: limit
-        }
-    }
-      
     try {
-        results.results = await Bill.find(findObj).limit(limit).skip(startIndex).exec()
+        const results = await Bill.countDocuments(findObj).exec()
         res.status(200).json(results)
     } catch (err) {
         res.status(500).json(err)
