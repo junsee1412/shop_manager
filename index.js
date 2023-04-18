@@ -6,12 +6,12 @@ const mongoose = require("mongoose")
 const port = 3000
 
 // Router
-const authRoute = require("./routes/auth.js")
-const userRoute = require("./routes/users.js")
-const productRoute = require("./routes/products.js")
-const brandRoute = require("./routes/brands.js")
-const categoryRoute = require("./routes/categories.js")
-const billtRoute = require("./routes/bills.js")
+const authRoute = require("./api/routes/auth.js")
+const userRoute = require("./api/routes/users.js")
+const productRoute = require("./api/routes/products.js")
+const brandRoute = require("./api/routes/brands.js")
+const categoryRoute = require("./api/routes/categories.js")
+const billtRoute = require("./api/routes/bills.js")
 
 dotenv.config()
 app.use(express.json())
@@ -28,6 +28,6 @@ app.use("/api/brand", brandRoute)
 app.use("/api/categories", categoryRoute)
 app.use("/api/bill", billtRoute)
 
-app.listen(port, () => {
-    console.log("http://127.0.0.1:%d", port)
+app.listen(process.env.PORT || port, () => {
+    console.log("Running...!")
 })
