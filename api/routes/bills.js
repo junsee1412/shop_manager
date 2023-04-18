@@ -95,7 +95,7 @@ router.get("/", verify, async (req, res) => {
         findObj.checkout = true
     }
     try {
-        const results = await Bill.countDocuments(findObj).exec()
+        const results = await Bill.find(findObj)
         res.status(200).json(results)
     } catch (err) {
         res.status(500).json(err)
