@@ -6,12 +6,12 @@ const mongoose = require("mongoose")
 const port = 3000
 
 // Router
-const authRoute = require("./api/routes/auth.js")
-const userRoute = require("./api/routes/users.js")
-const productRoute = require("./api/routes/products.js")
-const brandRoute = require("./api/routes/brands.js")
-const categoryRoute = require("./api/routes/categories.js")
-const billtRoute = require("./api/routes/bills.js")
+const authRoute = require("./routes/auth.js")
+const userRoute = require("./routes/users.js")
+const productRoute = require("./routes/products.js")
+const brandRoute = require("./routes/brands.js")
+const categoryRoute = require("./routes/categories.js")
+const billtRoute = require("./routes/bills.js")
 
 dotenv.config()
 app.use(express.json())
